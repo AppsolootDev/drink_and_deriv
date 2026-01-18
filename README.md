@@ -190,6 +190,56 @@ The platform is built on top of the **Deriv Ecosystem**.
 
 ## 🛠 Installation & Setup
 
+### **1. Local MongoDB Installation**
+
+#### **macOS (using Homebrew)**
+```bash
+brew tap mongodb/brew
+brew install mongodb-community@7.0
+brew services start mongodb-community@7.0
+```
+
+#### **Windows**
+1. Download the MSI installer from [MongoDB Download Center](https://www.mongodb.com/try/download/community).
+2. Run the installer and select "Complete" setup type.
+3. Ensure "Install MongoDB as a Service" is checked.
+4. MongoDB will be available at `localhost:27017`.
+
+#### **Linux (Ubuntu/Debian)**
+```bash
+sudo apt-get install gnupg curl
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+sudo systemctl start mongod
+```
+
+---
+
+### **2. IDE Configuration & Plugins**
+
+#### **IntelliJ IDEA / Android Studio**
+- **Required Plugins**:
+    - **Flutter**: Supports project execution, debugging, and hot reload.
+    - **Dart**: Syntax highlighting and code analysis.
+    - **Database Navigator**: For viewing your local MongoDB data directly within the IDE.
+- **Config**: 
+    - Go to `Settings > Languages & Frameworks > Flutter` and ensure the SDK path is set.
+    - Create a "Flutter" run configuration pointing to `lib/main.dart`.
+
+#### **Visual Studio Code (VS Code)**
+- **Recommended Extensions**:
+    - `Dart` & `Flutter` (by Dart Code): Essential for development.
+    - `MongoDB for VS Code`: Connect to your local instance and run queries.
+    - `Error Lens`: To see diagnostic messages in-line.
+- **Settings**:
+    - Ensure `dart.flutterSdkPath` is configured in your global `settings.json`.
+
+---
+
+### **3. Execution**
+
 1. **Backend**:
    ```bash
    cd api
