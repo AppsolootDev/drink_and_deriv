@@ -1,0 +1,66 @@
+name: drink_and_deryve
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  device_preview: ^1.1.0
+  http: ^1.1.0
+  mongo_dart: ^0.10.0
+  fl_chart: ^0.63.0
+  rxdart: ^0.27.7
+  webview_flutter: ^4.4.2
+  webview_flutter_android: ^3.10.0
+  webview_flutter_wkwebview: ^3.9.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/background_splash.png
+    - assets/images/
+
+  fonts:
+    - family: Josefine
+      fonts:
+        - asset: assets/fonts/josefine/JosefinSans-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/josefine/JosefinSansThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/josefine/JosefinSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/josefine/JosefinSans-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/josefine/JosefinSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/josefine/JosefinSans-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/josefine/JosefinSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/josefine/JosefinSans-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/josefine/JosefinSansBold.ttf
+          weight: 700
+        - asset: assets/fonts/josefine/JosefinSansBoldItalic.ttf
+          weight: 700
+          style: italic
+    - family: Coolday
+      fonts:
+        - asset: "assets/fonts/valetine_coolday/Valentine-Coolday .otf"
