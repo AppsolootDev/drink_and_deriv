@@ -84,10 +84,97 @@ npm test
 
 ---
 
-## 🤝 Stakeholders
+## 🤝 Stakeholders & DB Relations
 
-![Stakeholders Diagram](https://via.placeholder.com/800x400?text=Stakeholders:+Investors,+Platform+Admins,+Fleet+Partners,+Logistics+Providers)
-*Visual representation of the Drink & Deryve ecosystem, connecting retail investors with high-yield asset management.*
+Below is the architectural mapping of the Drink & Deryve ecosystem and how stakeholders relate through the database schema.
+
+### **Stakeholder Relationship Map**
+```mermaid
+graph TD
+    User((Investor/User))
+    Admin((Platform Admin))
+    DerivApp[Deriv Portal/API]
+    DB[(MongoDB)]
+
+    User -- "Starts Session" --> Investment[User Investment]
+    Investment -- "Trades On" --> Vehicle[Investment Vehicle]
+    Vehicle -- "Performance Data" --> DerivApp
+    Admin -- "Oversees" --> DB
+    Admin -- "Manages" --> User
+    Admin -- "Creates" --> Vehicle
+    
+    subgraph Data Layer
+        DB --- User
+        DB --- Vehicle
+        DB --- Investment
+        DB --- Trade[Trade Log]
+    end
+```
+
+### **Database ER Diagram**
+```mermaid
+erDiagram
+    USER ||--o{ INVESTMENT : owns
+    INVESTMENT ||--o{ TRADE : generates
+    VEHICLE ||--o{ INVESTMENT : categorizes
+    
+    USER {
+        string id
+        string fullName
+        string email
+        string access_level
+    }
+    VEHICLE {
+        string id
+        string name
+        string type
+        string tradingOption
+    }
+    INVESTMENT {
+        string id
+        string userId
+        string vehicleId
+        float amount_invested
+        string status
+    }
+    TRADE {
+        string id
+        float profit_loss
+        bool is_win
+        timestamp time
+    }
+```
+
+---
+
+## 📋 UML Use Case Diagrams
+
+The following diagrams detail the functional requirements for different user roles.
+
+### **User (Investor) Use Cases**
+```mermaid
+graph LR
+    User((User))
+    
+    User --> UC1(Authenticate & Link Deriv)
+    User --> UC2(Browse Asset Vehicles)
+    User --> UC3(Manage Active Sessions)
+    User --> UC4(View Performance Analytics)
+    User --> UC5(Request Fund Withdrawal)
+    User --> UC6(Contact Support)
+```
+
+### **Admin Use Cases**
+```mermaid
+graph LR
+    Admin((Admin))
+    
+    Admin --> AC1(Platform Dashboard Overview)
+    Admin --> AC2(User Management & Deletion)
+    Admin --> AC3(Create & Configure Vehicles)
+    Admin --> AC4(Monitor Global Trade Logs)
+    Admin --> AC5(Analyze Segment Performance)
+```
 
 ---
 
