@@ -18,11 +18,12 @@ class DatabaseService {
     if (_db != null && _db!.isConnected) return;
     
     try {
+      debugPrint("[DB LOG] Attempting to connect to MongoDB at $_url...");
       _db = await Db.create(_url);
       await _db!.open();
-      debugPrint("Connected to Localhost MongoDB");
+      debugPrint("[DB LOG] Successfully connected to Localhost MongoDB");
     } catch (e) {
-      debugPrint("MongoDB Connection Error: $e");
+      debugPrint("[DB LOG] MongoDB Connection Error: $e");
       rethrow;
     }
   }
@@ -33,18 +34,25 @@ class DatabaseService {
   }
 
   Future<void> insert(String collectionName, Map<String, dynamic> data) async {
+    debugPrint("[DB LOG] Inserting data into collection '$collectionName'...");
     var collection = db.collection(collectionName);
     await collection.insertOne(data);
+    debugPrint("[DB LOG] Data successfully moved to DB.");
   }
 
   Future<List<Map<String, dynamic>>> query(String collectionName) async {
+    debugPrint("[DB LOG] Querying collection '$collectionName'...");
     var collection = db.collection(collectionName);
-    return await collection.find().toList();
+    final results = await collection.find().toList();
+    debugPrint("[DB LOG] Query returned ${results.length} items.");
+    return results;
   }
 
   Future<void> clearAll() async {
+    debugPrint("[DB LOG] Clearing all collections...");
     await db.collection('users').remove({});
     await db.collection('vehicles').remove({});
     await db.collection('investments').remove({});
+    debugPrint("[DB LOG] Database wiped clean.");
   }
 }

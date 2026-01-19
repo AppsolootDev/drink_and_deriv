@@ -25,13 +25,21 @@ class DatabaseSeeder {
       await db.insert('users', user.toMap());
     }
 
-    // Seed Vehicles with fixed image assets
+    // Seed Vehicles with all required parameters
     final vehicles = [
       InvestmentVehicle(
         id: 'v_01',
         name: 'Kentucky Rounder',
+        brand: 'Toyota',
+        model: 'Quantum',
+        year: 2022,
+        registrationNumber: 'KENT-01-GP',
         type: 'Fleet Asset',
         tradingOption: 'Rise/Fall',
+        fuelType: 'Diesel',
+        transmission: 'Manual',
+        location: 'Johannesburg, ZA',
+        partnerName: 'SwiftFleet Logistics',
         targetAmount: 25000.0,
         lotSize: 40,
         lotPrice: 625.0,
@@ -44,8 +52,16 @@ class DatabaseSeeder {
       InvestmentVehicle(
         id: 'v_02',
         name: 'Levora',
+        brand: 'Mercedes-Benz',
+        model: 'Sprinter',
+        year: 2023,
+        registrationNumber: 'LEVO-02-ZN',
         type: 'Logistics Asset',
         tradingOption: 'Higher/Lower',
+        fuelType: 'Diesel',
+        transmission: 'Automatic',
+        location: 'Durban, ZA',
+        partnerName: 'UrbanLink Couriers',
         targetAmount: 18500.0,
         lotSize: 25,
         lotPrice: 740.0,
@@ -58,8 +74,16 @@ class DatabaseSeeder {
       InvestmentVehicle(
         id: 'v_03',
         name: 'Matchbox',
+        brand: 'Volkswagen',
+        model: 'Caddy',
+        year: 2021,
+        registrationNumber: 'MATC-03-CP',
         type: 'Economy Asset',
         tradingOption: 'Touch/No Touch',
+        fuelType: 'Petrol',
+        transmission: 'Manual',
+        location: 'Cape Town, ZA',
+        partnerName: 'EcoTours Fleet',
         targetAmount: 12000.0,
         lotSize: 15,
         lotPrice: 800.0,

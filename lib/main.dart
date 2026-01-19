@@ -1,10 +1,20 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
-import 'src/pages/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:showcaseview/showcaseview.dart';
+import 'src/pages/login_page.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("Warning: .env file not found or failed to load: $e");
+  }
+
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
@@ -18,90 +28,73 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define the base text style with Josefine and 17px
     const baseTextStyle = TextStyle(
       fontFamily: 'Josefine',
       fontSize: 17,
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
-      title: 'Drink and Deryve',
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: 'Josefine', // Global default font
-        textTheme: const TextTheme(
-          bodyLarge: baseTextStyle,
-          bodyMedium: baseTextStyle,
-          bodySmall: TextStyle(fontFamily: 'Josefine', fontSize: 14), 
-          titleLarge: TextStyle(fontFamily: 'Josefine', fontSize: 22, fontWeight: FontWeight.bold),
-          titleMedium: TextStyle(fontFamily: 'Josefine', fontSize: 19, fontWeight: FontWeight.w600),
-          titleSmall: TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.w500),
-          labelLarge: baseTextStyle,
-          labelMedium: baseTextStyle,
-          labelSmall: baseTextStyle,
-        ),
-        colorScheme: const ColorScheme(
-          brightness: Brightness.light,
-          primary: Color(0xFFBA8858), // camel
-          onPrimary: Colors.white,
-          secondary: Color(0xFFC4B5A6), // khaki-beige
-          onSecondary: Color(0xFF0A0C08), // onyx
-          surface: Colors.white,
-          onSurface: Color(0xFF0A0C08), // onyx
-          error: Colors.red,
-          onError: Colors.white,
-          outline: Color(0xFF3E2A1A), // dark-coffee
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 2, 
-          shadowColor: Colors.black12,
-          surfaceTintColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
-          actionsIconTheme: IconThemeData(color: Colors.black),
-          titleTextStyle: TextStyle(
-            color: Colors.black,
-            fontFamily: 'Josefine',
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            shadows: [],
+    return ShowCaseWidget(
+      builder: (context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
+        title: 'Drink and Deryve',
+        theme: ThemeData(
+          useMaterial3: true,
+          fontFamily: 'Josefine',
+          textTheme: const TextTheme(
+            bodyLarge: baseTextStyle,
+            bodyMedium: baseTextStyle,
+            bodySmall: TextStyle(fontFamily: 'Josefine', fontSize: 14), 
+            titleLarge: TextStyle(fontFamily: 'Josefine', fontSize: 22, fontWeight: FontWeight.bold),
+            titleMedium: TextStyle(fontFamily: 'Josefine', fontSize: 19, fontWeight: FontWeight.w600),
+            titleSmall: TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.w500),
+            labelLarge: baseTextStyle,
+            labelMedium: baseTextStyle,
+            labelSmall: baseTextStyle,
+          ),
+          colorScheme: const ColorScheme(
+            brightness: Brightness.light,
+            primary: Color(0xFFBA8858),
+            onPrimary: Colors.white,
+            secondary: Color(0xFFC4B5A6),
+            onSecondary: Color(0xFF0A0C08),
+            surface: Colors.white,
+            onSurface: Color(0xFF0A0C08),
+            error: Colors.red,
+            onError: Colors.white,
+            outline: Color(0xFF3E2A1A),
+          ),
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 2, 
+            shadowColor: Colors.black12,
+            surfaceTintColor: Colors.white,
+            iconTheme: IconThemeData(color: Color(0xFFBA8858)),
+            actionsIconTheme: IconThemeData(color: Color(0xFFBA8858)),
+            titleTextStyle: TextStyle(
+              color: Colors.black,
+              fontFamily: 'Josefine',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFBA8858),
+              foregroundColor: Colors.white,
+              textStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+          ),
+          cardTheme: const CardThemeData(
+            color: Colors.white,
+            elevation: 2,
+            surfaceTintColor: Colors.white,
           ),
         ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFBA8858), // camel
-            foregroundColor: Colors.white,
-            textStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.bold),
-          ),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            textStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.bold),
-          ),
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            textStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.bold),
-          ),
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF0A0C08), // onyx
-          selectedItemColor: Color(0xFFBA8858), // camel
-          unselectedItemColor: Color(0xFFC4B5A6), // khaki-beige
-          selectedLabelStyle: TextStyle(fontFamily: 'Josefine', fontSize: 12),
-          unselectedLabelStyle: TextStyle(fontFamily: 'Josefine', fontSize: 12),
-        ),
-        cardTheme: const CardThemeData(
-          color: Colors.white,
-          elevation: 2,
-          surfaceTintColor: Colors.white,
-        ),
+        home: const LoginPage(),
       ),
-      home: const SplashScreen(),
     );
   }
 }

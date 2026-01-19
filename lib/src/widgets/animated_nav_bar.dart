@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class AnimatedNavBarItem extends StatelessWidget {
   final IconData icon;
   final bool isSelected;
   final bool isChanging;
   final VoidCallback onTap;
+  final GlobalKey? showcaseKey;
+  final String? description;
 
   const AnimatedNavBarItem({
     super.key,
@@ -12,11 +15,13 @@ class AnimatedNavBarItem extends StatelessWidget {
     required this.isSelected,
     required this.isChanging,
     required this.onTap,
+    this.showcaseKey,
+    this.description,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    Widget item = GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
@@ -70,5 +75,16 @@ class AnimatedNavBarItem extends StatelessWidget {
         ),
       ),
     );
+
+    if (showcaseKey != null && description != null) {
+      return Showcase(
+        key: showcaseKey!,
+        description: description!,
+        descTextStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 12),
+        child: item,
+      );
+    }
+
+    return item;
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'investment_data.dart';
-import 'about_us_screen.dart';
 import 'login_page.dart';
 import 'edit_profile_screen.dart';
 import 'deriv_webview_screen.dart';
@@ -103,18 +102,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ProfileDetailRow(label: 'Total Gains', value: 'R ${CurrencyHelper.format(investmentManager.returnsBalance)}', isEditable: false, color: Colors.green, textStyle: josefineStyle),
                 ProfileDetailRow(label: 'Total Losses', value: 'R ${CurrencyHelper.format(investmentManager.lossesBalance)}', isEditable: false, color: Colors.red, textStyle: josefineStyle),
               ],
-              
-              const SizedBox(height: 30),
-              
-              // Common Section
-              SectionHeader(title: 'Support & Info', textStyle: josefineStyle),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.info_outline),
-                title: Text('About Us', style: josefineStyle),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutUsScreen())),
-              ),
               
               const SizedBox(height: 40),
               Center(

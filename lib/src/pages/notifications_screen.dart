@@ -12,6 +12,14 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final Set<int> _clickedIndices = {};
 
+  Color _getIconColor(IconData icon) {
+    if (icon == Icons.play_arrow) return Colors.green;
+    if (icon == Icons.pause) return Colors.orange;
+    if (icon == Icons.stop) return Colors.red;
+    if (icon == Icons.warning || icon == Icons.warning_amber_rounded) return const Color(0xFFFBC02D); // Dark Yellow
+    return Colors.orange.shade300;
+  }
+
   void _showNotificationDetail(BuildContext context, AppNotification note, int index) {
     setState(() {
       _clickedIndices.add(index);
@@ -23,7 +31,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
-            Icon(note.icon, color: Colors.orange),
+            Icon(note.icon, color: _getIconColor(note.icon)),
             const SizedBox(width: 12),
             Expanded(child: Text(note.title)),
           ],
@@ -99,6 +107,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             itemBuilder: (context, index) {
               final note = notifications[index];
               final isClicked = _clickedIndices.contains(index);
+              final iconColor = _getIconColor(note.icon);
+              final notificationNumber = notifications.length - index;
 
               return Card(
                 elevation: 2,
@@ -107,9 +117,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 color: isClicked ? Colors.orange.shade50 : Colors.white,
                 child: ListTile(
                   onTap: () => _showNotificationDetail(context, note, index),
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.orange.withOpacity(0.1),
-                    child: Icon(note.icon, color: isClicked ? Colors.orange : Colors.orange.shade300),
+                  leading: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: iconColor.withOpacity(0.1),
+                        child: Icon(note.icon, color: iconColor),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                        child: Text(
+                          '#$notificationNumber',
+                          style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.grey),
+                        ),
+                      ),
+                    ],
                   ),
                   title: Text(
                     note.title, 
@@ -122,8 +145,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     note.message,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 9), // 9px description
                   ),
-                  trailing: Icon(Icons.chevron_right, size: 16, color: isClicked ? Colors.orange : Colors.grey),
+                  trailing: const Icon(Icons.info_outline, size: 20, color: Color(0xFFBA8858)), // Info icon instead of arrow
                 ),
               );
             },

@@ -557,7 +557,43 @@ class _UserManagementPageState extends State<UserManagementPage> {
       Expanded(child: _isSearching ? const SpinningRedLoader() : usersToDisplay.isEmpty ? const Center(child: Text('No users found.')) : ListView.builder(padding: const EdgeInsets.fromLTRB(16, 0, 16, 100), itemCount: usersToDisplay.length, itemBuilder: (context, index) {
         final user = usersToDisplay[index];
         final ratio = user['total'] == 0 ? 0.0 : user['wins'] / user['total'];
-        return Card(child: ListTile(leading: const CircleAvatar(child: Icon(Icons.person)), title: Text(user['name']), subtitle: Row(children: [Text('Ratio: ${(ratio * 100).toStringAsFixed(0)}%', style: const TextStyle(color: Color(0xFFE0B0FF), fontWeight: FontWeight.bold)), const SizedBox(width: 12), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(12)), child: Text(user['access'], style: const TextStyle(fontSize: 10, color: Colors.grey)))]), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminUserDetailScreen(userName: user['name']))), trailing: Switch(value: user['access'] == 'Full', onChanged: (val) {})));
+        return Card(
+          child: ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.person)), 
+            title: Text(user['name']), 
+            subtitle: Row(children: [Text('Ratio: ${(ratio * 100).toStringAsFixed(0)}%', style: const TextStyle(color: Color(0xFFE0B0FF), fontWeight: FontWeight.bold)), const SizedBox(width: 12), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(12)), child: Text(user['access'], style: const TextStyle(fontSize: 10, color: Colors.grey)))]), 
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminUserDetailScreen(userName: user['name']))), 
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Switch(value: user['access'] == 'Full', onChanged: (val) {}),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Delete User'),
+                        content: Text('Are you sure you want to delete ${user['name']}? This will send them their Deriv details and remove platform assets.'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
+                          TextButton(
+                            onPressed: () {
+                              // Simulated delete logic
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${user['name']} deleted successfully.')));
+                            },
+                            child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            )
+          )
+        );
       })),
     ]);
   }
@@ -693,9 +729,9 @@ class _TradeSearchPageState extends State<TradeSearchPage> {
   bool _isSearching = false;
   Timer? _searchTimer;
   final List<Map<String, String>> _allTrades = [
-    {'id': 't1', 'user': 'John Doe', 'vehicle': 'Kentucky Rounder', 'gains': '1,200', 'losses': '50', 'balance': '10,000', 'time': '2023-10-27 10:30', 'option': 'Rise/Fall', 'value': '500'},
-    {'id': 't2', 'user': 'Jane Smith', 'vehicle': 'Levora', 'gains': '800', 'losses': '20', 'balance': '5,000', 'time': '2023-10-27 11:15', 'option': 'Higher/Lower', 'value': '300'},
-    {'id': 't3', 'user': 'Mike Johnson', 'vehicle': 'Matchbox', 'gains': '400', 'losses': '100', 'balance': '2,500', 'time': '2023-10-27 09:45', 'option': 'Touch/No Touch', 'value': '200'},
+    {'id': 't1', 'user': 'John Doe', 'vehicle': 'Kentucky Rounder', 'gains': 'R 1,200', 'losses': 'R 50', 'balance': 'R 10,000', 'time': '2023-10-27 10:30', 'option': 'Rise/Fall', 'value': 'R 500'},
+    {'id': 't2', 'user': 'Jane Smith', 'vehicle': 'Levora', 'gains': 'R 800', 'losses': 'R 20', 'balance': 'R 5,000', 'time': '2023-10-27 11:15', 'option': 'Higher/Lower', 'value': 'R 300'},
+    {'id': 't3', 'user': 'Mike Johnson', 'vehicle': 'Matchbox', 'gains': 'R 400', 'losses': 'R 100', 'balance': 'R 2,500', 'time': '2023-10-27 09:45', 'option': 'Touch/No Touch', 'value': 'R 200'},
   ];
   void _onSearchChanged(String query) {
     if (_searchTimer?.isActive ?? false) _searchTimer!.cancel();
@@ -741,6 +777,10 @@ class TradeDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double gains = double.parse(trade['gains']!.replaceAll('R', '').replaceAll(',', '').trim());
+    final double losses = double.parse(trade['losses']!.replaceAll('R', '').replaceAll(',', '').trim());
+    final bool isProfit = gains >= losses;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Trade Details'), centerTitle: true),
       body: SingleChildScrollView(
@@ -777,7 +817,7 @@ class TradeDetailPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.trending_up, color: Colors.green, size: 30),
+                        Icon(isProfit ? Icons.trending_up : Icons.trending_down, color: isProfit ? Colors.green : Colors.red, size: 30),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(

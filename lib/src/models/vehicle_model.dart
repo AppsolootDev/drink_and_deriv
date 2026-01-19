@@ -5,8 +5,16 @@ import 'package:flutter/material.dart';
 class InvestmentVehicle {
   final String id;
   final String name;
+  final String brand;
+  final String model;
+  final int year;
+  final String registrationNumber;
   final String type; // e.g., Fleet, Luxury, Logistics
   final String tradingOption; // e.g., Rise/Fall, Higher/Lower, Touch/No Touch
+  final String fuelType;
+  final String transmission;
+  final String location;
+  final String partnerName;
   final double targetAmount;
   final int lotSize;
   final double lotPrice;
@@ -20,8 +28,16 @@ class InvestmentVehicle {
   InvestmentVehicle({
     required this.id,
     required this.name,
+    required this.brand,
+    required this.model,
+    required this.year,
+    required this.registrationNumber,
     required this.type,
     required this.tradingOption,
+    required this.fuelType,
+    required this.transmission,
+    required this.location,
+    required this.partnerName,
     required this.targetAmount,
     required this.lotSize,
     required this.lotPrice,
@@ -37,8 +53,16 @@ class InvestmentVehicle {
     return {
       'id': id,
       'name': name,
+      'brand': brand,
+      'model': model,
+      'year': year,
+      'registrationNumber': registrationNumber,
       'type': type,
       'tradingOption': tradingOption,
+      'fuelType': fuelType,
+      'transmission': transmission,
+      'location': location,
+      'partnerName': partnerName,
       'targetAmount': targetAmount,
       'lotSize': lotSize,
       'lotPrice': lotPrice,
@@ -55,8 +79,16 @@ class InvestmentVehicle {
     return InvestmentVehicle(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
+      brand: map['brand'] ?? '',
+      model: map['model'] ?? '',
+      year: map['year'] ?? 0,
+      registrationNumber: map['registrationNumber'] ?? '',
       type: map['type'] ?? '',
       tradingOption: map['tradingOption'] ?? '',
+      fuelType: map['fuelType'] ?? '',
+      transmission: map['transmission'] ?? '',
+      location: map['location'] ?? '',
+      partnerName: map['partnerName'] ?? '',
       targetAmount: (map['targetAmount'] ?? 0.0).toDouble(),
       lotSize: map['lotSize'] ?? 0,
       lotPrice: (map['lotPrice'] ?? 0.0).toDouble(),

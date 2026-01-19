@@ -68,7 +68,7 @@ class SignupPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const OtpPage(destination: 'your email/SMS'),
+                    builder: (context) => const OtpPage(destination: 'your email/SMS', isTutorial: false,),
                   ),
                 );
               },

@@ -142,27 +142,31 @@ class _SecurityPageState extends State<SecurityPage> {
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                double amount = double.tryParse(amountController.text) ?? 0;
-                if (amount > 10000) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Limit exceeded: Max R10,000.00 per month')));
-                } else if (amount > 0) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentWebViewScreen(amount: amount),
-                    ),
-                  ).then((_) {
-                    // Assuming success for mock flow
-                    investmentManager.topUp(amount);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Funds added successfully!')));
-                  });
-                }
-              },
-              child: const Text('PROCEED TO PAYMENT'),
+          Builder(
+            builder: (context) => SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  double amount = double.tryParse(amountController.text) ?? 0;
+                  if (amount > 10000) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Limit exceeded: Max R10,000.00 per month')));
+                  } else if (amount > 0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentWebViewScreen(amount: amount),
+                      ),
+                    ).then((_) {
+                      // Assuming success for mock flow
+                      investmentManager.topUp(amount);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Funds added successfully!')));
+                      }
+                    });
+                  }
+                },
+                child: const Text('PROCEED TO PAYMENT'),
+              ),
             ),
           ),
         ],

@@ -3,7 +3,7 @@ import 'landing_page.dart';
 
 class OtpPage extends StatefulWidget {
   final String destination;
-  const OtpPage({super.key, required this.destination});
+  const OtpPage({super.key, required this.destination, required bool isTutorial});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
