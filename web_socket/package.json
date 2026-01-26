@@ -1,0 +1,13 @@
+{
+  "name": "drink-and-deryve-ws-simulator",
+  "version": "1.0.0",
+  "description": "WebSocket Simulator for Drink & Deryve",
+  "main": "simulator.js",
+  "scripts": {
+    "start": "node simulator.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2"
+  }
+}

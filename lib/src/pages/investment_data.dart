@@ -225,6 +225,7 @@ class InvestmentManager extends ChangeNotifier {
   String currentDerivAccessCode = "ABCDE-FGHIJ-KLMNO";
 
   late IO.Socket socket;
+  Timer? _connectionTimeoutTimer;
 
   final BehaviorSubject<AccountBalances> balanceSubject = BehaviorSubject<AccountBalances>.seeded(AccountBalances(
     storageBalance: 100000.0,
@@ -240,16 +241,22 @@ class InvestmentManager extends ChangeNotifier {
   }
 
   void _initSocket() {
-    final String socketUrl = Platform.isAndroid ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+    final String socketUrl = Platform.isAndroid ? 'http://10.0.2.2:7500' : 'http://localhost:7500';
     print('Connecting to socket at $socketUrl');
     
+    _startConnectionTimeout();
+
     socket = IO.io(socketUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
+      'reconnection': true,
+      'reconnectionDelay': 1000,
+      'reconnectionAttempts': 5,
     });
 
     socket.onConnect((_) {
       print('Connected to Socket.io server');
+      _connectionTimeoutTimer?.cancel();
       // Re-emit start for all active investments on reconnect
       for (var inv in _activeInvestments) {
         if (inv.status == InvestmentStatus.active) {
@@ -263,8 +270,14 @@ class InvestmentManager extends ChangeNotifier {
       }
     });
 
-    socket.onConnectError((err) => print('Connection Error: $err'));
-    socket.onDisconnect((_) => print('Disconnected from Socket.io server'));
+    socket.onConnectError((err) {
+      print('Connection Error: $err');
+    });
+
+    socket.onDisconnect((_) {
+      print('Disconnected from Socket.io server - Emergency shutdown triggered');
+      _terminateAllActiveInvestments("Connection lost: Session terminated for safety.");
+    });
 
     socket.on('trade_update', (data) {
       print('Received trade update via socket: $data');
@@ -274,6 +287,30 @@ class InvestmentManager extends ChangeNotifier {
 
       _handleSocketTrade(invId, isWin, profitLoss);
     });
+  }
+
+  void _startConnectionTimeout() {
+    _connectionTimeoutTimer?.cancel();
+    _connectionTimeoutTimer = Timer(const Duration(seconds: 10), () {
+      if (!socket.connected) {
+        print('Server not reached within 10s. Closing connection.');
+        socket.disconnect();
+        _terminateAllActiveInvestments("Server unavailable: Connection timeout.");
+      }
+    });
+  }
+
+  void _terminateAllActiveInvestments(String reason) {
+    if (_activeInvestments.isEmpty) return;
+    
+    addNotification('Safety Shutdown', reason, Icons.security_rounded);
+    
+    // Create a copy to avoid concurrent modification issues
+    final activeIds = _activeInvestments.map((inv) => inv.id).toList();
+    for (var id in activeIds) {
+      stopInvestment(id);
+    }
+    notifyListeners();
   }
 
   void _handleSocketTrade(String id, bool isWin, double profitLoss) {
@@ -384,7 +421,10 @@ class InvestmentManager extends ChangeNotifier {
 
       _storageBalance += inv.sessionBalance;
       
-      socket.emit('stop_investment', {'investmentId': id});
+      if (socket.connected) {
+        socket.emit('stop_investment', {'investmentId': id});
+      }
+      
       inv.stop();
       _completedInvestments.insert(0, inv);
       _activeInvestments.removeAt(index);
@@ -439,6 +479,7 @@ class InvestmentManager extends ChangeNotifier {
 
   @override
   void dispose() {
+    _connectionTimeoutTimer?.cancel();
     socket.disconnect();
     _managerStopSubject.add(null);
     _managerStopSubject.close();

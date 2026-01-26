@@ -69,7 +69,6 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
 
   @override
   Widget build(BuildContext context) {
-    final isInvestingInThisVehicle = investmentManager.isInvestingInVehicle(widget.name);
     final riskDecoration = getRiskDecoration(widget.risk);
     final riskColor = getRiskColor(widget.risk);
 
@@ -116,7 +115,7 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
               ),
               child: ClipOval(
                 child: Image.asset(
-                  'assets/images/deriv.png',
+                  'assets/images/deriv_beer.png',
                   width: 20,
                   height: 20,
                   fit: BoxFit.cover,
@@ -385,7 +384,7 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Start Investment'),
+        title: const Text('Start Investment', style: TextStyle(fontWeight: FontWeight.bold)),
         content: StatefulBuilder(
           builder: (context, setState) {
             final double lotVal = double.tryParse(lotSizeController.text) ?? 0.0;
@@ -517,9 +516,9 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
                   takeProfit: tp,
                   stopLoss: sl,
                   initialFunding: lotSize,
-                  username: DateTime.now().millisecondsSinceEpoch.toString(),
-                  derivAppId: '',
-                  derivAccessCode: ''
+                  username: investmentManager.currentUsername,
+                  derivAppId: investmentManager.currentDerivAppId,
+                  derivAccessCode: investmentManager.currentDerivAccessCode
                 ),
                 context,
               );

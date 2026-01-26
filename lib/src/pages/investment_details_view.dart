@@ -79,38 +79,55 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
             _buildMasterSessionCard(inv, josefineStyle),
             const SizedBox(height: 24),
             
-            // Trading Performance Table
-            _buildTradingPerformanceTable(josefineStyle),
+            // Performance Summary Section
+            Text('Performance Summary', style: josefineStyle.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: _buildTradingPerformanceTable(josefineStyle),
+            ),
             const SizedBox(height: 24),
 
             Text('Performance Chart', style: josefineStyle.copyWith(fontWeight: FontWeight.bold)),
             _buildChart(),
-            const Divider(),
+            
+            // Trade History Section
+            const SizedBox(height: 12),
             Text('Trade History', style: josefineStyle.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: _displayTrades.isEmpty ? 0 : min(itemsToShow * 80.0, 600.0),
-              ),
-              child: AnimatedList(
-                key: _listKey,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                initialItemCount: itemsToShow,
-                itemBuilder: (context, index, animation) {
-                  if (index >= _displayTrades.length) return const SizedBox.shrink();
-                  final tradeNumber = _displayTrades.length - index;
-                  return _buildAnimatedTradeTile(_displayTrades[index], tradeNumber, animation, josefineStyle);
-                },
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: _displayTrades.isEmpty ? 0 : min(itemsToShow * 80.0, 600.0),
+                      ),
+                      child: AnimatedList(
+                        key: _listKey,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        initialItemCount: itemsToShow,
+                        itemBuilder: (context, index, animation) {
+                          if (index >= _displayTrades.length) return const SizedBox.shrink();
+                          final tradeNumber = _displayTrades.length - index;
+                          return _buildAnimatedTradeTile(_displayTrades[index], tradeNumber, animation, josefineStyle);
+                        },
+                      ),
+                    ),
+                    if (_displayTrades.length > 10)
+                      TextButton(
+                        onPressed: () => setState(() => _showAllTrades = !_showAllTrades),
+                        child: Text(_showAllTrades ? 'See less' : 'See all (${_displayTrades.length} trades)'),
+                      ),
+                  ],
+                ),
               ),
             ),
-
-            if (_displayTrades.length > 10)
-              TextButton(
-                onPressed: () => setState(() => _showAllTrades = !_showAllTrades),
-                child: Text(_showAllTrades ? 'See less' : 'See all (${_displayTrades.length} trades)'),
-              ),
             
             if (!inv.isClosed && investmentManager.storageBalance < 25)
               Padding(
@@ -239,56 +256,47 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Column(
+      child: Table(
+        columnWidths: const {
+          0: FlexColumnWidth(1),
+          1: FlexColumnWidth(2),
+          2: FlexColumnWidth(2),
+          3: FlexColumnWidth(1),
+        },
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text('Performance Summary', style: style.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
-          ),
-          Table(
-            columnWidths: const {
-              0: FlexColumnWidth(1),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(2),
-              3: FlexColumnWidth(1),
-            },
+          TableRow(
+            decoration: BoxDecoration(color: Colors.grey.shade50),
             children: [
-              TableRow(
-                decoration: BoxDecoration(color: Colors.grey.shade50),
-                children: [
-                  _buildTableCell('#', isHeader: true),
-                  _buildTableCell('Lot', isHeader: true),
-                  _buildTableCell('Result', isHeader: true),
-                  _buildTableCell('Win', isHeader: true),
-                ],
-              ),
-              ...recentTrades.map((trade) {
-                final tradeNumber = _displayTrades.length - _displayTrades.indexOf(trade);
-                return TableRow(
-                  children: [
-                    _buildTableCell('$tradeNumber'),
-                    _buildTableCell('R ${trade.lot.toStringAsFixed(0)}'),
-                    _buildTableCell(
-                      '${trade.isWin ? '+' : ''}R ${CurrencyHelper.format(trade.profitLoss)}',
-                      color: trade.isWin ? Colors.green : Colors.red,
-                    ),
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Icon(
-                          trade.isWin ? Icons.check_circle : Icons.cancel,
-                          color: trade.isWin ? Colors.green : Colors.red,
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }).toList(),
+              _buildTableCell('#', isHeader: true),
+              _buildTableCell('Lot', isHeader: true),
+              _buildTableCell('Result', isHeader: true),
+              _buildTableCell('Win', isHeader: true),
             ],
           ),
+          ...recentTrades.map((trade) {
+            final tradeNumber = _displayTrades.length - _displayTrades.indexOf(trade);
+            return TableRow(
+              children: [
+                _buildTableCell('$tradeNumber'),
+                _buildTableCell('R ${trade.lot.toStringAsFixed(0)}'),
+                _buildTableCell(
+                  '${trade.isWin ? '+' : ''}R ${CurrencyHelper.format(trade.profitLoss)}',
+                  color: trade.isWin ? Colors.green : Colors.red,
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Icon(
+                      trade.isWin ? Icons.check_circle : Icons.cancel,
+                      color: trade.isWin ? Colors.green : Colors.red,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
         ],
       ),
     );
@@ -315,13 +323,15 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
       child: SlideTransition(
         position: animation.drive(Tween<Offset>(begin: const Offset(0, -0.1), end: Offset.zero)),
         child: Card(
+          elevation: 0,
+          color: Colors.grey.shade50,
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TradeItemScreen(trade: trade))),
             dense: true,
             leading: CircleAvatar(
               radius: 14,
-              backgroundColor: Colors.grey.shade100,
+              backgroundColor: Colors.white,
               child: Text('#$tradeNumber', style: style.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
             ),
             title: Text('Trade R ${trade.lot.toStringAsFixed(0)}', style: style.copyWith(fontWeight: FontWeight.w600)),
@@ -362,7 +372,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
             LineChartData(
               lineTouchData: LineTouchData(
                 touchTooltipData: LineTouchTooltipData(
-                 // tooltipBgColor: Colors.grey.shade800,
+                  tooltipBgColor: Colors.grey.shade800,
                   getTooltipItems: (List<LineBarSpot> touchedSpots) {
                     return touchedSpots.map((LineBarSpot touchedSpot) {
                       final index = touchedSpot.x.toInt() - 1;
