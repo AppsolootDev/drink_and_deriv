@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 import 'investment_data.dart';
 import 'trade_item_screen.dart';
 import '../helpers/currency_helper.dart';
@@ -285,7 +283,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
                     ),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           ),
         ],

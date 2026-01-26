@@ -4,14 +4,12 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'deriv_webview_screen.dart';
 import 'login_page.dart';
 import 'profile_screen.dart';
 import 'vehicle_investment_screen.dart';
 import 'investment_data.dart';
-import 'summary_screen.dart';
 import 'notifications_screen.dart';
 import 'investment_details_view.dart';
 import 'security_page.dart';
@@ -468,7 +466,7 @@ class ListRunningInvestments extends StatelessWidget {
           else ...active.map((inv) => StreamBuilder<InvestmentStatus>(stream: inv.statusStream, builder: (context, snapshot) {
             final status = snapshot.data ?? inv.status;
             return AnimatedOpacity(opacity: status == InvestmentStatus.closed ? 0.0 : 1.0, duration: const Duration(milliseconds: 500), child: Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 100, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [if (status == InvestmentStatus.paused) ...[const Text('Session Paused', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 10)), Text('Paused: ${inv.currentPauseDuration.inSeconds}s', style: const TextStyle(fontSize: 10, color: Colors.grey))] else _LiveTimer(startTime: inv.startTime, investment: inv)]), trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [IconButton(icon: Icon(status == InvestmentStatus.paused ? Icons.play_arrow : Icons.pause, color: status == InvestmentStatus.paused ? Colors.green : Colors.orange, size: 20), onPressed: () => investmentManager.togglePause(inv.id), padding: EdgeInsets.zero, constraints: const BoxConstraints()), const SizedBox(height: 8), IconButton(icon: const Icon(Icons.stop_circle, color: Colors.red, size: 20), onPressed: () => investmentManager.stopInvestment(inv.id), padding: EdgeInsets.zero, constraints: const BoxConstraints())])))],), const Positioned(top: 8, left: 8, child: CircleAvatar(radius: 12, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 14, color: Colors.black87)))])));
-          })).toList(),
+          })),
           if (completed.isEmpty) 
             Container(
               width: double.infinity,
@@ -485,7 +483,7 @@ class ListRunningInvestments extends StatelessWidget {
                 ),
               ),
             )
-          else ...[const SizedBox(height: 24), const SectionTitle(title: 'Investment History'), const SizedBox(height: 12), ...completed.map((inv) => Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 100, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Text('Ride Concluded', style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.right), trailing: const Icon(Icons.chevron_right, color: Color(0xFFBA8858))))],), const Positioned(top: 6, left: 6, child: CircleAvatar(radius: 10, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 12, color: Colors.black87)))])))].toList()
+          else ...[const SizedBox(height: 24), const SectionTitle(title: 'Investment History'), const SizedBox(height: 12), ...completed.map((inv) => Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 100, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Text('Ride Concluded', style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.right), trailing: const Icon(Icons.chevron_right, color: Color(0xFFBA8858))))],), const Positioned(top: 6, left: 6, child: CircleAvatar(radius: 10, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 12, color: Colors.black87)))])))]
         ]);
       }
     );

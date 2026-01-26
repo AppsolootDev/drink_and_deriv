@@ -339,12 +339,8 @@ class InvestmentManager extends ChangeNotifier {
       return;
     }
 
-    if (investment.stopLoss == null) {
-      investment.stopLoss = defaultStopLoss ?? (_highestDeposit * 0.1);
-    }
-    if (investment.takeProfit == null) {
-      investment.takeProfit = defaultTakeProfit;
-    }
+    investment.stopLoss ??= defaultStopLoss ?? (_highestDeposit * 0.1);
+    investment.takeProfit ??= defaultTakeProfit;
 
     _storageBalance -= _initialTradeFee;
     _totalFees += _initialTradeFee;

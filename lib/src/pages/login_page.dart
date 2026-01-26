@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'landing_page.dart';
 import 'admin_landing_page.dart';
 import 'otp_page.dart';
 import '../db/db_helper.dart';

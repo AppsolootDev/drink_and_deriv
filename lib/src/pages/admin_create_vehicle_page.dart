@@ -107,7 +107,7 @@ class _AdminCreateVehiclePageState extends State<AdminCreateVehiclePage> {
         maturityMonths: 12,
         description: _descriptionController.text.isNotEmpty 
             ? _descriptionController.text 
-            : 'Professionally managed ${_brandController.text} ${_modelController.text} with ${lotSizePercent}% lot allocation.',
+            : 'Professionally managed ${_brandController.text} ${_modelController.text} with $lotSizePercent% lot allocation.',
         imageUrl: _uploadedImagePath,
       );
 
@@ -183,7 +183,7 @@ class _AdminCreateVehiclePageState extends State<AdminCreateVehiclePage> {
                 const SizedBox(height: 16),
                 
                 DropdownButtonFormField<String>(
-                  value: _selectedTradingOption,
+                  initialValue: _selectedTradingOption,
                   decoration: const InputDecoration(labelText: 'Trading Option'),
                   items: _tradingOptions.map((opt) => DropdownMenuItem(value: opt, child: Text(opt))).toList(),
                   onChanged: (val) { setState(() => _selectedTradingOption = val); _validateForm(); },
@@ -191,7 +191,7 @@ class _AdminCreateVehiclePageState extends State<AdminCreateVehiclePage> {
                 const SizedBox(height: 16),
 
                 DropdownButtonFormField<String>(
-                  value: _selectedAssetType,
+                  initialValue: _selectedAssetType,
                   decoration: const InputDecoration(labelText: 'Asset Type'),
                   items: _assetTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
                   onChanged: (val) { setState(() => _selectedAssetType = val); _validateForm(); },
@@ -201,14 +201,14 @@ class _AdminCreateVehiclePageState extends State<AdminCreateVehiclePage> {
                 Row(
                   children: [
                     Expanded(child: DropdownButtonFormField<String>(
-                      value: _selectedFuelType,
+                      initialValue: _selectedFuelType,
                       decoration: const InputDecoration(labelText: 'Fuel Type'),
                       items: _fuelTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
                       onChanged: (val) { setState(() => _selectedFuelType = val); _validateForm(); },
                     )),
                     const SizedBox(width: 12),
                     Expanded(child: DropdownButtonFormField<String>(
-                      value: _selectedTransmission,
+                      initialValue: _selectedTransmission,
                       decoration: const InputDecoration(labelText: 'Transmission'),
                       items: _transmissions.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
                       onChanged: (val) { setState(() => _selectedTransmission = val); _validateForm(); },

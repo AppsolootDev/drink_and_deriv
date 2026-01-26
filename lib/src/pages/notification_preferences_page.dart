@@ -69,7 +69,7 @@ class _NotificationPreferencesPageState extends State<NotificationPreferencesPag
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.orange,
+        activeThumbColor: Colors.orange,
       ),
     );
   }
