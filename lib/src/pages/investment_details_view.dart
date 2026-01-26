@@ -361,7 +361,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
             LineChartData(
               lineTouchData: LineTouchData(
                 touchTooltipData: LineTouchTooltipData(
-                  tooltipBgColor: Colors.grey.shade800,
+                 // tooltipBgColor: Colors.grey.shade800,
                   getTooltipItems: (List<LineBarSpot> touchedSpots) {
                     return touchedSpots.map((LineBarSpot touchedSpot) {
                       final index = touchedSpot.x.toInt() - 1;
