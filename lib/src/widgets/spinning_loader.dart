@@ -43,7 +43,7 @@ class _SpinningRedLoaderState extends State<SpinningRedLoader> with SingleTicker
                 ),
               ),
               Image.asset(
-                'assets/images/deriv.png',
+                'assets/images/deriv_beer.png',
                 width: 30,
                 height: 30,
                 errorBuilder: (context, error, stackTrace) => const Icon(Icons.stars, color: Colors.red),

@@ -14,6 +14,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool _showDerivFields = false;
+  final _appIdController = TextEditingController(text: '12345');
+  final _accessCodeController = TextEditingController(text: 'ABCDE-FGHIJ-KLMNO');
+
+  @override
+  void dispose() {
+    _appIdController.dispose();
+    _accessCodeController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     const josefineStyle = TextStyle(fontFamily: 'Josefine');
@@ -101,6 +112,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ProfileDetailRow(label: 'Total Investments', value: 'R ${CurrencyHelper.format(investmentManager.storageBalance)}', isEditable: false, textStyle: josefineStyle),
                 ProfileDetailRow(label: 'Total Gains', value: 'R ${CurrencyHelper.format(investmentManager.returnsBalance)}', isEditable: false, color: Colors.green, textStyle: josefineStyle),
                 ProfileDetailRow(label: 'Total Losses', value: 'R ${CurrencyHelper.format(investmentManager.lossesBalance)}', isEditable: false, color: Colors.red, textStyle: josefineStyle),
+                
+                const SizedBox(height: 30),
+                SectionHeader(title: 'Deriv Connection', textStyle: josefineStyle),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _showDerivFields = !_showDerivFields;
+                      });
+                    },
+                    icon: Icon(_showDerivFields ? Icons.visibility_off : Icons.visibility, size: 18),
+                    label: const Text('ACCESS MY DERIV ACCOUNT'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFCE2029),
+                      side: const BorderSide(color: Color(0xFFCE2029)),
+                    ),
+                  ),
+                ),
+                
+                if (_showDerivFields) ...[
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _appIdController,
+                    style: josefineStyle.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      labelText: 'App ID',
+                      labelStyle: josefineStyle.copyWith(fontSize: 18),
+                      prefixIcon: const Icon(Icons.apps),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _accessCodeController,
+                    style: josefineStyle.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      labelText: 'Access Code',
+                      labelStyle: josefineStyle.copyWith(fontSize: 18),
+                      prefixIcon: const Icon(Icons.vpn_key),
+                      border: const OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                  ),
+                ],
               ],
               
               const SizedBox(height: 40),
@@ -185,7 +242,7 @@ class ProfileDetailRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: textStyle.copyWith(color: Colors.grey, fontSize: 13)),
+          Text(label, style: textStyle.copyWith(color: Colors.grey, fontSize: 18)),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,7 +250,7 @@ class ProfileDetailRow extends StatelessWidget {
               Text(
                 value,
                 style: textStyle.copyWith(
-                  fontSize: 17,
+                  fontSize: 19,
                   fontWeight: FontWeight.bold,
                   color: color,
                 ),

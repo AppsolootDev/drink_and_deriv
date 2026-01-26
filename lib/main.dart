@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     const baseTextStyle = TextStyle(
       fontFamily: 'Josefine',
-      fontSize: 17,
+      fontSize: 20,
     );
 
     return ShowCaseWidget(
@@ -45,10 +45,10 @@ class MyApp extends StatelessWidget {
           textTheme: const TextTheme(
             bodyLarge: baseTextStyle,
             bodyMedium: baseTextStyle,
-            bodySmall: TextStyle(fontFamily: 'Josefine', fontSize: 14), 
-            titleLarge: TextStyle(fontFamily: 'Josefine', fontSize: 22, fontWeight: FontWeight.bold),
-            titleMedium: TextStyle(fontFamily: 'Josefine', fontSize: 19, fontWeight: FontWeight.w600),
-            titleSmall: TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.w500),
+            bodySmall: TextStyle(fontFamily: 'Josefine', fontSize: 16), 
+            titleLarge: TextStyle(fontFamily: 'Josefine', fontSize: 24, fontWeight: FontWeight.bold),
+            titleMedium: TextStyle(fontFamily: 'Josefine', fontSize: 21, fontWeight: FontWeight.w600),
+            titleSmall: TextStyle(fontFamily: 'Josefine', fontSize: 20, fontWeight: FontWeight.w500),
             labelLarge: baseTextStyle,
             labelMedium: baseTextStyle,
             labelSmall: baseTextStyle,
@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
             titleTextStyle: TextStyle(
               color: Colors.black,
               fontFamily: 'Josefine',
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFBA8858),
               foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 17, fontWeight: FontWeight.bold),
+              textStyle: const TextStyle(fontFamily: 'Josefine', fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           cardTheme: const CardThemeData(

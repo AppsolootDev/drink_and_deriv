@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 import 'otp_page.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +68,21 @@ class SignupPage extends StatelessWidget {
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 20),
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
                 labelText: 'Password',
                 prefixIcon: Icon(Icons.lock_outline),
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _confirmPasswordController,
+              decoration: const InputDecoration(
+                labelText: 'Confirm Password',
+                prefixIcon: Icon(Icons.lock_reset),
                 border: OutlineInputBorder(),
               ),
               obscureText: true,
@@ -64,6 +90,13 @@ class SignupPage extends StatelessWidget {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
+                if (_passwordController.text != _confirmPasswordController.text) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Passwords do not match'), backgroundColor: Colors.red),
+                  );
+                  return;
+                }
+
                 // In a real app, this would trigger the OTP send logic
                 Navigator.push(
                   context,

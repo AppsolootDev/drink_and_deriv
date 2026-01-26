@@ -4,6 +4,7 @@ import 'profile_screen.dart';
 import 'investment_data.dart';
 import 'notifications_screen.dart';
 import '../helpers/risk_helper.dart';
+import '../helpers/currency_helper.dart';
 
 class VehicleInvestmentScreen extends StatefulWidget {
   final String name;
@@ -266,12 +267,12 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
       floatingActionButton: Container(
         decoration: riskDecoration,
         child: FloatingActionButton(
-          onPressed: isInvestingInThisVehicle ? null : _showInvestmentConfirm,
+          onPressed: _showInvestmentConfirm, // Always allow opening new trade
           backgroundColor: Colors.transparent, 
-          elevation: isInvestingInThisVehicle ? 0 : 4,
-          child: Icon(
-            isInvestingInThisVehicle ? Icons.check : Icons.radio_button_unchecked,
-            color: isInvestingInThisVehicle ? Colors.grey : Colors.white,
+          elevation: 4,
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
             size: 30,
           ),
         ),
@@ -379,105 +380,101 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
     final nameController = TextEditingController();
     final tpController = TextEditingController();
     final slController = TextEditingController();
-    final lotSizeController = TextEditingController(text: "0.35");
-    final stakeController = TextEditingController(text: "100.00");
+    final lotSizeController = TextEditingController(text: "100.00");
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Start Investment'),
         content: StatefulBuilder(
-          builder: (context, setState) => SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Please configure your investment session:'),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'drive name',
-                    hintText: 'e.g. My Growth',
-                    border: OutlineInputBorder(),
+          builder: (context, setState) {
+            final double lotVal = double.tryParse(lotSizeController.text) ?? 0.0;
+            final double guaranteePerc = (double.tryParse(widget.guarantee.replaceAll('%', '')) ?? 15.0) / 100.0;
+            final double potWin = lotVal * guaranteePerc;
+
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Please configure your investment session:'),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'drive name',
+                      hintText: 'e.g. My Growth',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: lotSizeController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
-                    labelText: 'Lot Size (Min 0.35)',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: lotSizeController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Lot Size (Initial Session Funding)',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (val) {
+                      final double stake = double.tryParse(val) ?? 0;
+                      if (stake > 0) {
+                        tpController.text = (stake * 1.5).toStringAsFixed(2);
+                        slController.text = (stake * 1.5 * 0.1).toStringAsFixed(2);
+                      }
+                      setState(() {});
+                    },
                   ),
-                  onChanged: (val) => setState(() {}),
-                ),
-                const SizedBox(height: 8),
-                // Cost section
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(8)),
-                  child: Row(
+                  const SizedBox(height: 12),
+                  // Potential Result Section
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blue.shade100),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Potential Outcome per Trade:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.blue)),
+                        const SizedBox(height: 4),
+                        Text('Estimated Winnings: R ${CurrencyHelper.format(potWin)}', style: const TextStyle(fontSize: 13, color: Colors.green, fontWeight: FontWeight.w600)),
+                        Text('Estimated Loss: R ${CurrencyHelper.format(lotVal)}', style: const TextStyle(fontSize: 13, color: Colors.red, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
                     children: [
-                      const Icon(Icons.info_outline, size: 14, color: Colors.blue),
-                      const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
-                          'Estimated Cost: R ${(double.tryParse(lotSizeController.text) ?? 0.35) * 100}', 
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blue)
+                        child: TextField(
+                          controller: tpController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Take Profit (R)',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: slController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Stop Loss (R)',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: stakeController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
-                    labelText: 'Stake Amount (R)',
-                    hintText: 'Overall aim to stake',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (val) {
-                    final stake = double.tryParse(val) ?? 0;
-                    if (stake > 0) {
-                      tpController.text = (stake * 1.5).toStringAsFixed(2); // 50% more
-                      slController.text = (stake * 1.5 * 0.1).toStringAsFixed(2); // 10% of TP
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: tpController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Take Profit (R)',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: slController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Stop Loss (R)',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Text('Note: A trade fee of R7.00 will be applied.', style: TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 16),
+                  const Text('Note: The lot size will be deducted from your bank balance immediately.', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                ],
+              ),
+            );
+          },
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCEL')),
@@ -487,29 +484,22 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
               final double? lotSize = double.tryParse(lotSizeController.text);
               final double? tp = double.tryParse(tpController.text);
               final double? sl = double.tryParse(slController.text);
-              final double? stake = double.tryParse(stakeController.text);
 
               if (name.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a session name')));
                 return;
               }
-              if (lotSize == null || lotSize < 0.35) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lot size must be at least 0.35')));
+              if (lotSize == null || lotSize <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid lot size')));
                 return;
               }
-              if (stake == null || stake <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a valid stake amount')));
-                return;
-              }
-              if (stake > investmentManager.storageBalance) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Stake amount cannot exceed bank balance'), backgroundColor: Colors.red));
+              if (lotSize > investmentManager.storageBalance) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lot size cannot exceed bank balance'), backgroundColor: Colors.red));
                 return;
               }
               
-              if (tp != null && sl != null && sl >= tp) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Stop Loss must be less than Take Profit'), backgroundColor: Colors.red),
-                );
+              if (investmentManager.activeInvestments.any((i) => i.name == name)) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Session name must be unique')));
                 return;
               }
 
@@ -526,7 +516,10 @@ class _VehicleInvestmentScreenState extends State<VehicleInvestmentScreen> with 
                   startTime: DateTime.now(),
                   takeProfit: tp,
                   stopLoss: sl,
-                  stakeAmount: 100,
+                  initialFunding: lotSize,
+                  username: DateTime.now().millisecondsSinceEpoch.toString(),
+                  derivAppId: '',
+                  derivAccessCode: ''
                 ),
                 context,
               );
@@ -552,8 +545,8 @@ class _DetailRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 15)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
       ],
     );
   }

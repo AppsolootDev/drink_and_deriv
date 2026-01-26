@@ -68,7 +68,7 @@ class _AdminLandingPageState extends State<AdminLandingPage> with TickerProvider
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.black12)),
-              child: ClipOval(child: Image.asset('assets/images/deriv.png', width: 16, height: 16, fit: BoxFit.cover)),
+              child: ClipOval(child: Image.asset('assets/images/deriv_beer.png', width: 16, height: 16, fit: BoxFit.cover)),
             ),
             const SizedBox(width: 10),
             Text(_titles[_selectedIndex], style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
@@ -184,8 +184,8 @@ class AdminHomePage extends StatelessWidget {
           _PerformanceTile(label: 'BEST: Kentucky Rounder', value: '250,000', color: Colors.green),
           _PerformanceTile(label: 'WORST: Matchbox', value: '45,000', color: Colors.red),
           const SizedBox(height: 24),
-          const Text('User Segmentation', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          _UserSegmentationChart(),
+          const Text('Investment Segmentation', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          _InvestmentSegmentationCard(),
           const SizedBox(height: 40),
         ],
       ),
@@ -193,165 +193,131 @@ class AdminHomePage extends StatelessWidget {
   }
 }
 
-class _UserSegmentationChart extends StatefulWidget {
+class _InvestmentSegmentationCard extends StatefulWidget {
   @override
-  State<_UserSegmentationChart> createState() => _UserSegmentationChartState();
+  State<_InvestmentSegmentationCard> createState() => _InvestmentSegmentationCardState();
 }
 
-class _UserSegmentationChartState extends State<_UserSegmentationChart> {
+class _InvestmentSegmentationCardState extends State<_InvestmentSegmentationCard> {
   int touchedIndex = -1;
-  bool isDrilledDown = false;
-  String? drilledSegment;
 
   @override
   Widget build(BuildContext context) {
-    if (isDrilledDown) {
-      return Container(
-        height: 250,
-        margin: const EdgeInsets.symmetric(vertical: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300, width: 1.5),
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-        ),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Users: $drilledSegment', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const Text('Segment Distribution', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                  ],
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.orange),
-                  onPressed: () => setState(() { isDrilledDown = false; drilledSegment = null; }),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: BarChart(
-                BarChartData(
-                  gridData: FlGridData(
-                    show: true, 
-                    drawVerticalLine: false,
-                    getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    bottomTitles: AxisTitles(
-                      axisNameWidget: const Text('User Names', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          const names = ['John', 'Jane', 'Mike'];
-                          if (value.toInt() >= names.length) return const Text('');
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(names[value.toInt()], style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                          );
-                        },
-                      ),
-                    ),
-                    leftTitles: const AxisTitles(
-                      axisNameWidget: Text('Activity Score', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                      sideTitles: SideTitles(showTitles: true, reservedSize: 30),
-                    ),
-                  ),
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.grey.shade200,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        const fullNames = ['John Doe', 'Jane Smith', 'Mike Ross'];
-                        return BarTooltipItem(
-                          '${fullNames[groupIndex]}\nScore: ${rod.toY.toInt()}',
-                          const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 12),
-                        );
-                      },
-                    ),
-                    touchCallback: (event, response) {
-                      if (event is FlTapUpEvent && response != null && response.spot != null) {
-                        final index = response.spot!.touchedBarGroupIndex;
-                        const names = ['John Doe', 'Jane Smith', 'Mike Ross'];
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AdminUserDetailScreen(userName: names[index])));
-                      }
+            const Text('Users by Investment Type', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 200,
+              child: PieChart(
+                PieChartData(
+                  pieTouchData: PieTouchData(
+                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                      setState(() {
+                        if (!event.isInterestedForInteractions ||
+                            pieTouchResponse == null ||
+                            pieTouchResponse.touchedSection == null) {
+                          touchedIndex = -1;
+                          return;
+                        }
+                        touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                      });
                     },
                   ),
-                  barGroups: [
-                    BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: 12, color: Colors.purple, width: 22, borderRadius: const BorderRadius.vertical(top: Radius.circular(4)))]),
-                    BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: 8, color: Colors.purple, width: 22, borderRadius: const BorderRadius.vertical(top: Radius.circular(4)))]),
-                    BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: 5, color: Colors.purple, width: 22, borderRadius: const BorderRadius.vertical(top: Radius.circular(4)))]),
+                  sectionsSpace: 4,
+                  centerSpaceRadius: 40,
+                  sections: [
+                    _buildSection(0, Colors.orange, 45, 'Rise/Fall', Icons.trending_up),
+                    _buildSection(1, Colors.blue, 30, 'Higher/Lower', Icons.swap_vert),
+                    _buildSection(2, Colors.green, 25, 'Touch/No Touch', Icons.ads_click),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
-      );
-    }
-
-    return Container(
-      height: 200,
-      margin: const EdgeInsets.symmetric(vertical: 16),
-      child: PieChart(
-        PieChartData(
-          pieTouchData: PieTouchData(
-            touchCallback: (FlTouchEvent event, pieTouchResponse) {
-              if (event is FlTapUpEvent && pieTouchResponse != null && pieTouchResponse.touchedSection != null) {
-                final index = pieTouchResponse.touchedSection!.touchedSectionIndex;
-                setState(() {
-                  isDrilledDown = true;
-                  drilledSegment = index == 0 ? 'High Value' : index == 1 ? 'Mid Tier' : 'New Users';
-                });
-              }
-              setState(() {
-                if (!event.isInterestedForInteractions ||
-                    pieTouchResponse == null ||
-                    pieTouchResponse.touchedSection == null) {
-                  touchedIndex = -1;
-                  return;
-                }
-                touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
-              });
-            },
-          ),
-          sectionsSpace: 4,
-          centerSpaceRadius: 40,
-          sections: [
-            PieChartSectionData(
-              color: Colors.purple, 
-              value: 15, 
-              title: touchedIndex == 0 ? 'High Value' : '>R5k', 
-              radius: touchedIndex == 0 ? 70 : 60, 
-              borderSide: const BorderSide(color: Colors.white, width: 2),
-              titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)
-            ),
-            PieChartSectionData(
-              color: Colors.blue, 
-              value: 35, 
-              title: touchedIndex == 1 ? 'Mid Tier' : '>R100', 
-              radius: touchedIndex == 1 ? 60 : 50, 
-              borderSide: const BorderSide(color: Colors.white, width: 2),
-              titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)
-            ),
-            PieChartSectionData(
-              color: Colors.grey, 
-              value: 50, 
-              title: touchedIndex == 2 ? 'New Users' : '>R10', 
-              radius: touchedIndex == 2 ? 50 : 40, 
-              borderSide: const BorderSide(color: Colors.white, width: 2),
-              titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)
-            ),
+            const SizedBox(height: 16),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _LegendItem(color: Colors.orange, label: 'Rise/Fall'),
+                SizedBox(width: 16),
+                _LegendItem(color: Colors.blue, label: 'Higher/Lower'),
+                SizedBox(width: 16),
+                _LegendItem(color: Colors.green, label: 'Touch/No Touch'),
+              ],
+            )
           ],
         ),
       ),
+    );
+  }
+
+  PieChartSectionData _buildSection(int index, Color color, double value, String title, IconData icon) {
+    final isTouched = touchedIndex == index;
+    final fontSize = isTouched ? 16.0 : 12.0;
+    final radius = isTouched ? 70.0 : 60.0;
+
+    return PieChartSectionData(
+      color: color,
+      value: value,
+      title: isTouched ? title : '${value.toInt()}%',
+      radius: radius,
+      titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: Colors.white),
+      badgeWidget: _Badge(icon, size: isTouched ? 40 : 30, borderColor: color),
+      badgePositionPercentageOffset: .98,
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final IconData icon;
+  final double size;
+  final Color borderColor;
+
+  const _Badge(this.icon, {required this.size, required this.borderColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: PieChart.defaultDuration,
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: borderColor, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.1),
+            offset: const Offset(0, 2),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(size * .15),
+      child: Center(
+        child: Icon(icon, color: borderColor, size: size * .6),
+      ),
+    );
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendItem({required this.color, required this.label});
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 4),
+        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 }
@@ -561,7 +527,25 @@ class _UserManagementPageState extends State<UserManagementPage> {
           child: ListTile(
             leading: const CircleAvatar(child: Icon(Icons.person)), 
             title: Text(user['name']), 
-            subtitle: Row(children: [Text('Ratio: ${(ratio * 100).toStringAsFixed(0)}%', style: const TextStyle(color: Color(0xFFE0B0FF), fontWeight: FontWeight.bold)), const SizedBox(width: 12), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(12)), child: Text(user['access'], style: const TextStyle(fontSize: 10, color: Colors.grey)))]), 
+            subtitle: Row(children: [
+              Text(
+                'Ratio: ${(ratio * 100).toStringAsFixed(0)}%', 
+                style: const TextStyle(
+                  color: Color(0xFFD2B48C), // Light Brown
+                  fontWeight: FontWeight.bold, 
+                  fontSize: 16,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black26,
+                      offset: Offset(1, 1),
+                      blurRadius: 2,
+                    )
+                  ]
+                )
+              ), 
+              const SizedBox(width: 12), 
+              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(12)), child: Text(user['access'], style: const TextStyle(fontSize: 10, color: Colors.grey)))
+            ]),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AdminUserDetailScreen(userName: user['name']))), 
             trailing: Row(
               mainAxisSize: MainAxisSize.min,

@@ -90,12 +90,14 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
 
   void _onItemTapped(int index) {
     if (_selectedIndex == index) return;
-    setState(() => _isChangingPage = true);
+    setState(() {
+      _selectedIndex = index; // Update index immediately to switch to the new screen
+      _isChangingPage = true; // Show the animation over the new screen
+    });
     Timer(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() {
-          _selectedIndex = index;
-          _isChangingPage = false;
+          _isChangingPage = false; // Hide the animation after 1 second
         });
       }
     });
@@ -154,7 +156,7 @@ class _LandingPageState extends State<LandingPage> with TickerProviderStateMixin
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.black12)),
-                child: ClipOval(child: Image.asset('assets/images/deriv.png', width: 16, height: 16, fit: BoxFit.cover)),
+                child: ClipOval(child: Image.asset('assets/images/deriv_beer.png', width: 16, height: 16, fit: BoxFit.cover)),
               ),
             ),
             const SizedBox(width: 10),
@@ -467,7 +469,7 @@ class ListRunningInvestments extends StatelessWidget {
             )
           else ...active.map((inv) => StreamBuilder<InvestmentStatus>(stream: inv.statusStream, builder: (context, snapshot) {
             final status = snapshot.data ?? inv.status;
-            return AnimatedOpacity(opacity: status == InvestmentStatus.closed ? 0.0 : 1.0, duration: const Duration(milliseconds: 500), child: Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 100, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [if (status == InvestmentStatus.paused) ...[const Text('Session Paused', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 10)), Text('Paused: ${inv.currentPauseDuration.inSeconds}s', style: const TextStyle(fontSize: 10, color: Colors.grey))] else _LiveTimer(startTime: inv.startTime, investment: inv)]), trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [IconButton(icon: Icon(status == InvestmentStatus.paused ? Icons.play_arrow : Icons.pause, color: status == InvestmentStatus.paused ? Colors.green : Colors.orange, size: 20), onPressed: () => investmentManager.togglePause(inv.id), padding: EdgeInsets.zero, constraints: const BoxConstraints()), const SizedBox(height: 8), IconButton(icon: const Icon(Icons.stop_circle, color: Colors.red, size: 20), onPressed: () => investmentManager.stopInvestment(inv.id), padding: EdgeInsets.zero, constraints: const BoxConstraints())])))],), const Positioned(top: 8, left: 8, child: CircleAvatar(radius: 12, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 14, color: Colors.black87)))])));
+            return AnimatedOpacity(opacity: status == InvestmentStatus.closed ? 0.0 : 1.0, duration: const Duration(milliseconds: 500), child: Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 100, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [_LiveTimer(startTime: inv.startTime, investment: inv)]), trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [IconButton(icon: const Icon(Icons.stop_circle, color: Colors.red, size: 20), onPressed: () => investmentManager.stopInvestment(inv.id), padding: EdgeInsets.zero, constraints: const BoxConstraints())])))],), const Positioned(top: 8, left: 8, child: CircleAvatar(radius: 12, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 14, color: Colors.black87)))])));
           })).toList(),
           if (completed.isEmpty) 
             Container(
@@ -481,11 +483,11 @@ class ListRunningInvestments extends StatelessWidget {
               child: const Center(
                 child: Text(
                   "History repeats itself, keep riding",
-                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 14),
+                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 18),
                 ),
               ),
             )
-          else ...[const SizedBox(height: 24), const SectionTitle(title: 'Investment History'), const SizedBox(height: 12), ...completed.map((inv) => Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 100, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Text('Ride Concluded', style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.right), trailing: const Icon(Icons.chevron_right, color: Color(0xFFBA8858))))],), const Positioned(top: 6, left: 6, child: CircleAvatar(radius: 10, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 12, color: Colors.black87)))])))].toList()
+          else ...[const SizedBox(height: 24), const SectionTitle(title: 'Investment History'), const SizedBox(height: 12), ...completed.map((inv) => Card(margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16), clipBehavior: Clip.antiAlias, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: 80, child: Image.asset(inv.imageUrl, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: const Icon(Icons.directions_car, color: Colors.orange)))), Expanded(child: ListTile(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InvestmentDetailsView(investment: inv))), title: Text(inv.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right), subtitle: Text('Ride Concluded', style: const TextStyle(fontSize: 10, color: Colors.grey), textAlign: TextAlign.right), trailing: const Icon(Icons.chevron_right, color: Color(0xFFBA8858))))],), const Positioned(top: 6, left: 6, child: CircleAvatar(radius: 10, backgroundColor: Colors.white70, child: Icon(Icons.radio_button_unchecked, size: 12, color: Colors.black87)))])))].toList()
         ]);
       }
     );
@@ -519,7 +521,7 @@ class _BalanceCard extends StatelessWidget {
   const _BalanceCard({required this.title, required this.amount, required this.color, this.isFullWidth = false, this.child});
   @override
   Widget build(BuildContext context) {
-    return Container(width: isFullWidth ? double.infinity : null, padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: color.withOpacity(0.3))), child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 10), textAlign: TextAlign.center), const SizedBox(height: 4), Text(amount, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), textAlign: TextAlign.center), if (child != null) child!]));
+    return Container(width: isFullWidth ? double.infinity : null, padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: color.withOpacity(0.3))), child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center), const SizedBox(height: 4), Text(amount, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), textAlign: TextAlign.center), if (child != null) child!]));
   }
 }
 
@@ -544,7 +546,45 @@ class VehicleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final riskColor = getRiskColor(risk);
-    return Card(color: Colors.white, margin: const EdgeInsets.only(bottom: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), clipBehavior: Clip.antiAlias, elevation: 2, child: InkWell(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VehicleInvestmentScreen(name: name, investment: investment, lotSize: lotSize, risk: risk, guarantee: guarantee, img: img))), child: SizedBox(height: 140, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: double.infinity, child: Image.asset(img, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: Image.asset('assets/images/deriv.png', fit: BoxFit.cover)))), Expanded(child: Padding(padding: const EdgeInsets.only(left: 30, right: 16, top: 12, bottom: 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24), textAlign: TextAlign.left), Row(children: [Text(type, style: const TextStyle(fontSize: 12, color: Colors.grey)), const SizedBox(width: 8), const Icon(Icons.circle, size: 4, color: Colors.grey), const SizedBox(width: 8), Text(tradingOption, style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.w600))]), const SizedBox(height: 8), Row(mainAxisAlignment: MainAxisAlignment.start, children: [Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: getRiskDecoration(risk), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.assessment, size: 14, color: Colors.white), const SizedBox(width: 4), Text(risk, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))])), const SizedBox(width: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: getGreenGradientDecoration(), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.verified, size: 14, color: Colors.white), const SizedBox(width: 4), Text(guarantee, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))]))])])))],), Positioned(left: (MediaQuery.of(context).size.width * 0.25) - 20, top: 20, child: Column(children: [Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))]), child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.warning_amber_rounded, size: 12, color: riskColor), Text(guarantee, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold), textAlign: TextAlign.center)]))), const SizedBox(height: 4), const Icon(Icons.emoji_events, size: 24, color: Colors.amber, shadows: [Shadow(color: Colors.black, blurRadius: 4, offset: Offset(0, 2))])]))]))));
+    
+    // Determine icon and description for trading option
+    IconData optionIcon = Icons.trending_up;
+    String optionDescription = "";
+    if (tradingOption == "Rise/Fall") {
+      optionIcon = Icons.trending_up;
+      optionDescription = "Predict if market ends higher or lower.";
+    } else if (tradingOption == "Higher/Lower") {
+      optionIcon = Icons.swap_vert;
+      optionDescription = "Predict if market hits target price.";
+    } else if (tradingOption == "Touch/No Touch") {
+      optionIcon = Icons.ads_click;
+      optionDescription = "Predict if market touches target point.";
+    }
+
+    return Card(color: Colors.white, margin: const EdgeInsets.only(bottom: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), clipBehavior: Clip.antiAlias, elevation: 2, child: InkWell(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => VehicleInvestmentScreen(name: name, investment: investment, lotSize: lotSize, risk: risk, guarantee: guarantee, img: img))), child: SizedBox(height: 140, child: Stack(children: [Row(children: [SizedBox(width: MediaQuery.of(context).size.width * 0.25, height: double.infinity, child: Image.asset(img, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade200, child: Image.asset('assets/images/deriv_beer.png', fit: BoxFit.cover)))), Expanded(child: Padding(padding: const EdgeInsets.only(left: 30, right: 16, top: 12, bottom: 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24), textAlign: TextAlign.left), Row(children: [Text(type, style: const TextStyle(fontSize: 16, color: Colors.grey)), const SizedBox(width: 8), const Icon(Icons.circle, size: 4, color: Colors.grey), const SizedBox(width: 8),
+                  Tooltip(
+                    message: optionDescription,
+                    triggerMode: TooltipTriggerMode.tap,
+                    showDuration: const Duration(seconds: 3),
+                    textStyle: const TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Josefine'),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.orange.withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(optionIcon, size: 18, color: Colors.orange),
+                    ),
+                  ),
+                ]), const SizedBox(height: 8), Row(mainAxisAlignment: MainAxisAlignment.start, children: [Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: getRiskDecoration(risk), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.assessment, size: 14, color: Colors.white), const SizedBox(width: 4), Text(risk, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))])), const SizedBox(width: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: getGreenGradientDecoration(), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.verified, size: 14, color: Colors.white), const SizedBox(width: 4), Text(guarantee, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold))]))])])))],), Positioned(left: (MediaQuery.of(context).size.width * 0.25) - 20, top: 20, child: Column(children: [Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))]), child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.warning_amber_rounded, size: 12, color: riskColor), Text(guarantee, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold), textAlign: TextAlign.center)]))), const SizedBox(height: 4), const Icon(Icons.emoji_events, size: 24, color: Colors.amber, shadows: [Shadow(color: Colors.black, blurRadius: 4, offset: Offset(0, 2))])]))]))));
   }
 }
 

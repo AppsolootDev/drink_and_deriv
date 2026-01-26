@@ -74,7 +74,7 @@ class TradeItemScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    _DetailLine(label: 'Trade Amount', value: 'R ${trade.amount.toStringAsFixed(2)}', style: josefineStyle),
+                    _DetailLine(label: 'Lot Size', value: 'R ${trade.lot.toStringAsFixed(2)}', style: josefineStyle),
                     const Divider(height: 24),
                     _DetailLine(label: 'Net Profit/Loss', value: '${isProfit ? "+" : ""}R ${CurrencyHelper.format(trade.profitLoss)}', color: isProfit ? Colors.green : Colors.red, style: josefineStyle),
                     const Divider(height: 24),
@@ -134,7 +134,7 @@ class TradeItemScreen extends StatelessWidget {
 
   String _getTradeDescription(Trade trade) {
     final result = trade.isWin ? 'successful' : 'unsuccessful';
-    return 'This was a ${trade.type.name} ride on ${trade.vehicleName}. The investor allocated R ${trade.amount.toStringAsFixed(2)} for this specific entry. The outcome resulted in a $result position, affecting the overall running balance by R ${trade.profitLoss.abs().toStringAsFixed(2)}. Platform fees of R ${trade.fee.toStringAsFixed(2)} were applied to maintain secure execution.';
+    return 'This was a ${trade.type.name} ride on ${trade.vehicleName}. The investor allocated R ${trade.lot.toStringAsFixed(2)} for this specific entry. The outcome resulted in a $result position, affecting the overall running balance by R ${trade.profitLoss.abs().toStringAsFixed(2)}. Platform fees of R ${trade.fee.toStringAsFixed(2)} were applied to maintain secure execution.';
   }
 }
 

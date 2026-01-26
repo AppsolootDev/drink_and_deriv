@@ -21,13 +21,32 @@ dependencies:
   webview_flutter_wkwebview: ^3.9.0
   intl: ^0.20.2
   flutter_dotenv: ^5.1.0
-  easy_web_view: ^2.0.1
+  easy_web_view: ^2.1.0
   showcaseview: ^3.0.0
+  socket_io_client: ^2.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/deriv_beer.png"
+  web:
+    generate: true
+    image_path: "assets/images/deriv_beer.png"
+  windows:
+    generate: true
+    image_path: "assets/images/deriv_beer.png"
+  macos:
+    generate: true
+    image_path: "assets/images/deriv_beer.png"
+  linux:
+    generate: true
+    image_path: "assets/images/deriv_beer.png"
 
 flutter:
   uses-material-design: true

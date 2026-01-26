@@ -171,15 +171,15 @@ class _ActiveTradeItemState extends State<_ActiveTradeItem> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: Icon(widget.investment.isPaused ? Icons.play_arrow : Icons.pause, 
-                color: widget.investment.isPaused ? Colors.lightGreen : Colors.orange),
-              onPressed: () {
-                setState(() {
-                  investmentManager.togglePause(widget.investment.id);
-                });
-              },
-            ),
+            // IconButton(
+            //   icon: Icon(widget.investment.isPaused ? Icons.play_arrow : Icons.pause,
+            //     color: widget.investment.isPaused ? Colors.lightGreen : Colors.orange),
+            //   onPressed: () {
+            //     setState(() {
+            //       investmentManager.togglePause(widget.investment.id);
+            //     });
+            //   },
+            // ),
             IconButton(
               icon: const Icon(Icons.stop_circle, color: Color(0xFFCE2029)),
               onPressed: () {
@@ -370,7 +370,7 @@ class _TradeLogTile extends StatelessWidget {
             children: [
               Text(trade.isWin ? 'WIN' : 'LOSS', 
                 style: style.copyWith(fontWeight: FontWeight.bold, color: trade.isWin ? Colors.green : Colors.red)),
-              Text('Lot: ${CurrencyHelper.format(trade.amount)}', style: style.copyWith(fontSize: 12, color: Colors.grey)),
+              Text('Lot: ${CurrencyHelper.format(trade.lot)}', style: style.copyWith(fontSize: 12, color: Colors.grey)),
             ],
           ),
           Text('${trade.isWin ? '+' : ''}${CurrencyHelper.format(trade.profitLoss)}',

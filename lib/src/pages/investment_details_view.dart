@@ -66,10 +66,6 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
         actions: [
           if (!inv.isClosed) ...[
             IconButton(
-              icon: Icon(inv.isPaused ? Icons.play_arrow : Icons.pause, color: inv.isPaused ? Colors.green : Colors.orange),
-              onPressed: () => investmentManager.togglePause(inv.id),
-            ),
-            IconButton(
               icon: const Icon(Icons.stop_circle, color: Colors.red),
               onPressed: () => investmentManager.stopInvestment(inv.id),
             )
@@ -134,7 +130,6 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
   Widget _buildMasterSessionCard(Investment inv, TextStyle style) {
     final activeDuration = inv.activeDuration;
     final totalDuration = (inv.endTime ?? DateTime.now()).difference(inv.startTime);
-    final totalPause = inv.pauseEvents.fold(Duration.zero, (prev, element) => prev + element.duration);
 
     return Card(
       elevation: 4,
@@ -182,6 +177,14 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      _CompactStat('Session Balance', 'R ${CurrencyHelper.format(inv.sessionBalance)}', Colors.blue),
+                      _CompactStat('Initial Fund', 'R ${CurrencyHelper.format(inv.initialFunding)}', Colors.grey),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       _CompactStat('Total Gains', 'R ${CurrencyHelper.format(inv.sessionGains)}', Colors.green),
                       _CompactStat('Total Loss', 'R ${CurrencyHelper.format(inv.sessionLosses)}', Colors.red),
                     ],
@@ -198,11 +201,9 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
                   const Divider(height: 24),
                 ],
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _TimerBlock('Active Ride', '${activeDuration.inMinutes}m ${activeDuration.inSeconds % 60}s', style),
-                    _TimerBlock('Trip Time', '${totalDuration.inMinutes}m ${totalDuration.inSeconds % 60}s', style),
-                    _TimerBlock('Pause', '${totalPause.inMinutes}m ${totalPause.inSeconds % 60}s', style),
                   ],
                 ),
               ],
@@ -258,7 +259,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
                 decoration: BoxDecoration(color: Colors.grey.shade50),
                 children: [
                   _buildTableCell('#', isHeader: true),
-                  _buildTableCell('Amount', isHeader: true),
+                  _buildTableCell('Lot', isHeader: true),
                   _buildTableCell('Result', isHeader: true),
                   _buildTableCell('Win', isHeader: true),
                 ],
@@ -268,7 +269,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
                 return TableRow(
                   children: [
                     _buildTableCell('$tradeNumber'),
-                    _buildTableCell('R ${trade.amount.toStringAsFixed(0)}'),
+                    _buildTableCell('R ${trade.lot.toStringAsFixed(0)}'),
                     _buildTableCell(
                       '${trade.isWin ? '+' : ''}R ${CurrencyHelper.format(trade.profitLoss)}',
                       color: trade.isWin ? Colors.green : Colors.red,
@@ -323,7 +324,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
               backgroundColor: Colors.grey.shade100,
               child: Text('#$tradeNumber', style: style.copyWith(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
             ),
-            title: Text('Trade R ${trade.amount.toStringAsFixed(0)}', style: style.copyWith(fontWeight: FontWeight.w600)),
+            title: Text('Trade R ${trade.lot.toStringAsFixed(0)}', style: style.copyWith(fontWeight: FontWeight.w600)),
             subtitle: Text('Fee Paid: R ${trade.fee.toStringAsFixed(2)}', style: style.copyWith(fontSize: 11)),
             trailing: Icon(
               trade.isWin ? Icons.trending_up : Icons.trending_down,
@@ -353,7 +354,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
         }
 
         return Container(
-          height: 200,
+          height: 250,
           margin: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.all(16),
@@ -371,7 +372,7 @@ class _InvestmentDetailsViewState extends State<InvestmentDetailsView> {
                         'Trade #${index + 1}\n',
                         const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                         children: [
-                          TextSpan(text: 'Amount: R ${trade.amount.toStringAsFixed(0)}\n', style: const TextStyle(color: Colors.white70, fontSize: 10)),
+                          TextSpan(text: 'Lot: R ${trade.lot.toStringAsFixed(0)}\n', style: const TextStyle(color: Colors.white70, fontSize: 10)),
                           TextSpan(text: trade.isWin ? 'PROFIT' : 'LOSS', style: TextStyle(color: trade.isWin ? Colors.green : Colors.red, fontWeight: FontWeight.bold)),
                         ],
                       );
