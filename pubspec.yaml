@@ -1,47 +1,67 @@
+# Project Metadata
 name: drink_and_deryve
 description: "A new Flutter project."
+# Prevents the package from being published to pub.dev
 publish_to: 'none'
 
+# Project Versioning: [major].[minor].[patch]+[build]
 version: 1.0.0+1
 
+# SDK environment constraints
 environment:
   sdk: ^3.10.4
 
+# Project Dependencies
 dependencies:
   flutter:
     sdk: flutter
+
+  # UI/Icons
   cupertino_icons: ^1.0.8
-  device_preview: ^1.1.0
-  http: ^1.1.0
-  mongo_dart: ^0.10.0
-  fl_chart: ^0.63.0
-  rxdart: ^0.27.7
+  device_preview: ^1.1.0 # For testing UI on different screen sizes
+  fl_chart: ^0.63.0      # Charting library
+  showcaseview: ^3.0.0   # For feature walkthroughs
+
+  # Networking & Data
+  http: ^1.1.0           # HTTP requests
+  mongo_dart: ^0.10.0    # MongoDB driver
+  rxdart: ^0.27.7        # Reactive extensions
+
+  # WebView
   webview_flutter: ^4.4.2
   webview_flutter_android: ^3.10.0
   webview_flutter_wkwebview: ^3.9.0
-  intl: ^0.20.2
-  flutter_dotenv: ^5.1.0
   easy_web_view: ^2.0.1
-  showcaseview: ^3.0.0
 
+  # Utilities
+  intl: ^0.20.2          # Internationalization and formatting
+  flutter_dotenv: ^5.1.0 # Environment variables (.env)
+
+# Development only dependencies
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: ^6.0.0 # Recommended lint rules for Flutter
 
+# Flutter specific configuration
 flutter:
   uses-material-design: true
 
+  # Asset management
   assets:
     - .env
     - assets/background_splash.png
     - assets/images/
 
+  # Custom font configuration
   fonts:
+    - family: Lobster
+      fonts:
+        - asset: assets/fonts/Lobster.otf
     - family: Josefine
       fonts:
         - asset: assets/fonts/josefine/JosefinSans-Thin.ttf
-          weight: 100
+          w ght: 100
         - asset: assets/fonts/josefine/JosefinSansThinItalic.ttf
           weight: 100
           style: italic
